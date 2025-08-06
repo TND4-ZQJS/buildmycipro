@@ -1,1 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CI Pro Calculator</title>
+  <style>
+    :root {
+      --main-color: #004080;
+      --inactive-color: #ccc;
+      --dimmed-color: #aaa;
+    }
 
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      margin: 0;
+      background: #f4f7fb;
+      color: #333;
+    }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 999;
+      padding: 20px 15px 10px;
+      border-bottom: 1px solid #ddd;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin: 0 0 10px 0;
+      text-align: center;
+      color: var(--main-color);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--inactive-color);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--main-color);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+
+    .step-tracker {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 10px;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    .circle {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--inactive-color);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .label {
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .step.active .circle {
+      background: var(--main-color);
+    }
+
+    .step.active .label {
+      color: var(--main-color);
+    }
+
+    .step.dimmed .circle {
+      background: var(--dimmed-color);
+    }
+
+    .step.dimmed .label {
+      color: var(--dimmed-color);
+    }
+
+    .divider {
+      height: 2px;
+      background-color: var(--inactive-color);
+      flex: 0.5;
+      margin: 0 4px;
+    }
+
+    .content-section {
+      padding: 20px;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .content-section.hidden {
+      display: none;
+      opacity: 0;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    button {
+      background: var(--main-color);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 999px; /* Pill shape */
+      font-size: 1rem;
+      cursor: pointer;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    button:hover {
+      background: #003366;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+      .circle {
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+      }
+      .label {
+        font-size: 0.7rem;
+      }
+      .button-group {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sticky-header">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <h1>CI Pro Calculator</h1>
+    <div class="step-tracker">
+      <div class="step active" id="step-1">
+        <div class="circle">1</div>
+        <div class="label">Income</div>
+      </div>
+      <div class="divider"></div>
+      <div class="step dimmed" id="step-2">
+        <div class="circle">2</div>
+        <div class="label">Medical</div>
+      </div>
+      <div class="divider"></div>
+      <div class="step dimmed" id="step-3">
+        <div class="circle">3</div>
+        <div class="label">Summary</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section" id="section-1">
+    <h2>Step 1: Income Replacement</h2>
+    <div class="form-group">
+      <label for="monthlyIncome">Monthly Income (RM)</label>
+      <input type="number" id="monthlyIncome" placeholder="e.g. 5000" />
+    </div>
+    <div class="form-group">
+      <label for="yearsToReplace">Years to Replace</label>
+      <input type="number" id="yearsToReplace" placeholder="e.g. 5" />
+    </div>
+    <div class="button-group">
+      <button onclick="goToStep(2)">Next</button>
+    </div>
+  </div>
+
+  <div class="content-section hidden" id="section-2">
+    <h2>Step 2: Medical Expenses</h2>
+    <div class="form-group">
+      <label for="hospitalCost">Expected Hospital Cost (RM)</label>
+      <input type="number" id="hospitalCost" placeholder="e.g. 100000" />
+    </div>
+    <div class="form-group">
+      <label for="recoveryCost">Recovery Support Cost (RM)</label>
+      <input type="number" id="recoveryCost" placeholder="e.g. 30000" />
+    </div>
+    <div class="button-group">
+      <button onclick="goToStep(1)">Back</button>
+      <button onclick="goToStep(3)">Next</button>
+    </div>
+  </div>
+
+  <div class="content-section hidden" id="section-3">
+    <h2>Step 3: Total Summary</h2>
+    <p id="result"></p>
+    <div class="button-group">
+      <button onclick="goToStep(2)">Back</button>
+      <button onclick="location.reload()">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    function goToStep(step) {
+      const steps = [1, 2, 3];
+
+      steps.forEach(s => {
+        const stepEl = document.getElementById(`step-${s}`);
+        const sectionEl = document.getElementById(`section-${s}`);
+
+        if (s === step) {
+          stepEl.classList.add('active');
+          stepEl.classList.remove('dimmed');
+          sectionEl.classList.remove('hidden');
+          sectionEl.classList.add('fade-in');
+          setTimeout(() => {
+            sectionEl.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        } else {
+          stepEl.classList.remove('active');
+          if (s < step) {
+            stepEl.classList.remove('dimmed');
+          } else {
+            stepEl.classList.add('dimmed');
+          }
+          sectionEl.classList.add('hidden');
+          sectionEl.classList.remove('fade-in');
+        }
+      });
+
+      // Progress bar update
+      const fill = document.getElementById('progress-fill');
+      const percent = ((step - 1) / 2) * 100;
+      fill.style.width = percent + '%';
+
+      // Show results on step 3
+      if (step === 3) {
+        const income = parseFloat(document.getElementById("monthlyIncome").value) || 0;
+        const years = parseFloat(document.getElementById("yearsToReplace").value) || 0;
+        const hospital = parseFloat(document.getElementById("hospitalCost").value) || 0;
+        const recovery = parseFloat(document.getElementById("recoveryCost").value) || 0;
+
+        const totalIncome = income * 12 * years;
+        const totalMedical = hospital + recovery;
+        const total = totalIncome + totalMedical;
+
+        document.getElementById("result").innerHTML = `
+          <strong>Total Income Replacement:</strong> RM ${totalIncome.toLocaleString()}<br>
+          <strong>Total Medical Expenses:</strong> RM ${totalMedical.toLocaleString()}<br>
+          <strong><u>Recommended CI Coverage:</u></strong> <b>RM ${total.toLocaleString()}</b>
+        `;
+      }
+    }
+  </script>
+
+</body>
+</html>
