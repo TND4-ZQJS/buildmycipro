@@ -108,12 +108,22 @@
 
     .content-section {
       padding: 20px;
-      transition: opacity 0.3s;
+      opacity: 1;
+      transition: opacity 0.5s ease;
     }
 
-    .content-section.dimmed {
-      opacity: 0.4;
-      pointer-events: none;
+    .content-section.hidden {
+      display: none;
+      opacity: 0;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .form-group {
@@ -201,7 +211,7 @@
     <button onclick="goToStep(2)">Next</button>
   </div>
 
-  <div class="content-section dimmed" id="section-2">
+  <div class="content-section hidden" id="section-2">
     <h2>Step 2: Medical Expenses</h2>
     <div class="form-group">
       <label for="hospitalCost">Expected Hospital Cost (RM)</label>
@@ -214,40 +224,45 @@
     <button onclick="goToStep(3)">Next</button>
   </div>
 
-  <div class="content-section dimmed" id="section-3">
+  <div class="content-section hidden" id="section-3">
     <h2>Step 3: Total Summary</h2>
     <p id="result"></p>
   </div>
 
   <script>
     function goToStep(step) {
-      // Track steps and sections
       const steps = [1, 2, 3];
+
       steps.forEach(s => {
         const stepEl = document.getElementById(`step-${s}`);
         const sectionEl = document.getElementById(`section-${s}`);
+
         if (s === step) {
           stepEl.classList.add('active');
           stepEl.classList.remove('dimmed');
-          sectionEl.classList.remove('dimmed');
-          sectionEl.scrollIntoView({ behavior: 'smooth' });
-        } else if (s < step) {
-          stepEl.classList.add('active');
-          stepEl.classList.remove('dimmed');
-          sectionEl.classList.remove('dimmed');
+          sectionEl.classList.remove('hidden');
+          sectionEl.classList.add('fade-in');
+          setTimeout(() => {
+            sectionEl.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
         } else {
           stepEl.classList.remove('active');
-          stepEl.classList.add('dimmed');
-          sectionEl.classList.add('dimmed');
+          if (s < step) {
+            stepEl.classList.remove('dimmed');
+          } else {
+            stepEl.classList.add('dimmed');
+          }
+          sectionEl.classList.add('hidden');
+          sectionEl.classList.remove('fade-in');
         }
       });
 
-      // Progress bar
+      // Update progress bar
       const fill = document.getElementById('progress-fill');
       const percent = ((step - 1) / 2) * 100;
       fill.style.width = percent + '%';
 
-      // Show result at final step
+      // Calculate result at final step
       if (step === 3) {
         const income = parseFloat(document.getElementById("monthlyIncome").value) || 0;
         const years = parseFloat(document.getElementById("yearsToReplace").value) || 0;
