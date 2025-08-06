@@ -1,24 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CI Pro Calculator</title>
   <style>
-    * {
-      box-sizing: border-box;
+    :root {
+      --main-color: #004080;
+      --inactive-color: #ccc;
+      --dimmed-color: #aaa;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
       margin: 0;
-      padding: 0;
-      background-color: #f6f8fa;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px 30px 60px;
+      background: #f4f7fb;
+      color: #333;
     }
 
     .sticky-header {
@@ -26,21 +23,39 @@
       top: 0;
       background: white;
       z-index: 999;
-      padding: 20px 30px 10px;
+      padding: 20px 15px 10px;
       border-bottom: 1px solid #ddd;
       box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
 
     h1 {
-      margin: 0 0 10px;
-      color: #003366;
+      font-size: 1.4rem;
+      margin: 0 0 10px 0;
+      text-align: center;
+      color: var(--main-color);
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 5px;
+      background: var(--inactive-color);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--main-color);
+      width: 0%;
+      transition: width 0.4s ease;
     }
 
     .step-tracker {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      padding: 0 10px;
     }
 
     .step {
@@ -48,205 +63,209 @@
       flex-direction: column;
       align-items: center;
       flex: 1;
-      opacity: 0.4;
-      transition: opacity 0.3s;
-    }
-
-    .step.active {
-      opacity: 1;
     }
 
     .circle {
-      width: 34px;
-      height: 34px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
-      background-color: #004080;
+      background: var(--inactive-color);
       color: white;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       font-weight: bold;
       margin-bottom: 5px;
     }
 
     .label {
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: #004080;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .step.active .circle {
+      background: var(--main-color);
+    }
+
+    .step.active .label {
+      color: var(--main-color);
+    }
+
+    .step.dimmed .circle {
+      background: var(--dimmed-color);
+    }
+
+    .step.dimmed .label {
+      color: var(--dimmed-color);
     }
 
     .divider {
       height: 2px;
-      background-color: #004080;
-      flex: 0.3;
-      margin: 0 5px;
+      background-color: var(--inactive-color);
+      flex: 0.5;
+      margin: 0 4px;
     }
 
-    .form-step {
-      display: none;
-      opacity: 0.5;
-      transition: opacity 0.3s ease;
+    .content-section {
+      padding: 20px;
+      transition: opacity 0.3s;
     }
 
-    .form-step.active {
+    .content-section.dimmed {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
       display: block;
-      opacity: 1;
+      margin-bottom: 6px;
+      font-weight: 500;
     }
 
-    .form-step input {
+    input[type="number"],
+    input[type="text"] {
       width: 100%;
       padding: 10px;
-      margin: 8px 0 20px;
-      border-radius: 5px;
+      font-size: 1rem;
       border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
-    .navigation {
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .navigation button {
-      background-color: #004080;
+    button {
+      background: var(--main-color);
       color: white;
-      padding: 10px 18px;
       border: none;
-      border-radius: 5px;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-top: 10px;
       cursor: pointer;
-      margin-left: 10px;
     }
 
-    .navigation button:disabled {
-      background-color: #999;
-      cursor: not-allowed;
+    button:hover {
+      background: #003366;
     }
 
-    .summary-box {
-      background-color: #eef3f8;
-      padding: 15px;
-      border-radius: 8px;
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.2rem;
+      }
+      .circle {
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+      }
+      .label {
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
 <body>
+
   <div class="sticky-header">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     <h1>CI Pro Calculator</h1>
     <div class="step-tracker">
-      <div class="step active" id="step1-indicator">
+      <div class="step active" id="step-1">
         <div class="circle">1</div>
-        <div class="label">Income Replacement</div>
+        <div class="label">Income</div>
       </div>
       <div class="divider"></div>
-      <div class="step" id="step2-indicator">
+      <div class="step dimmed" id="step-2">
         <div class="circle">2</div>
-        <div class="label">Medical Expenses</div>
+        <div class="label">Medical</div>
       </div>
       <div class="divider"></div>
-      <div class="step" id="step3-indicator">
+      <div class="step dimmed" id="step-3">
         <div class="circle">3</div>
         <div class="label">Summary</div>
       </div>
     </div>
   </div>
 
-  <div class="container">
-    <!-- Step 1 -->
-    <div class="form-step active" id="step1">
-      <label>Annual income (RM):</label>
-      <input type="number" id="income" placeholder="e.g., 60000" />
-      
-      <label>Recovery period (years):</label>
-      <input type="number" id="years" placeholder="e.g., 5" />
+  <div class="content-section" id="section-1">
+    <h2>Step 1: Income Replacement</h2>
+    <div class="form-group">
+      <label for="monthlyIncome">Monthly Income (RM)</label>
+      <input type="number" id="monthlyIncome" placeholder="e.g. 5000" />
     </div>
+    <div class="form-group">
+      <label for="yearsToReplace">Years to Replace</label>
+      <input type="number" id="yearsToReplace" placeholder="e.g. 5" />
+    </div>
+    <button onclick="goToStep(2)">Next</button>
+  </div>
 
-    <!-- Step 2 -->
-    <div class="form-step" id="step2">
-      <label>Estimated medical costs (RM):</label>
-      <input type="number" id="medical" placeholder="e.g., 100000" />
+  <div class="content-section dimmed" id="section-2">
+    <h2>Step 2: Medical Expenses</h2>
+    <div class="form-group">
+      <label for="hospitalCost">Expected Hospital Cost (RM)</label>
+      <input type="number" id="hospitalCost" placeholder="e.g. 100000" />
     </div>
+    <div class="form-group">
+      <label for="recoveryCost">Recovery Support Cost (RM)</label>
+      <input type="number" id="recoveryCost" placeholder="e.g. 30000" />
+    </div>
+    <button onclick="goToStep(3)">Next</button>
+  </div>
 
-    <!-- Step 3 -->
-    <div class="form-step" id="step3">
-      <h3>Summary</h3>
-      <div class="summary-box" id="summary-output">
-        <!-- Final result appears here -->
-      </div>
-    </div>
-
-    <!-- Navigation Buttons -->
-    <div class="navigation">
-      <button id="backBtn" onclick="prevStep()" disabled>Back</button>
-      <button id="nextBtn" onclick="nextStep()">Next</button>
-    </div>
+  <div class="content-section dimmed" id="section-3">
+    <h2>Step 3: Total Summary</h2>
+    <p id="result"></p>
   </div>
 
   <script>
-    let currentStep = 1;
-
-    function updateStepDisplay() {
-      // Update form steps
-      document.querySelectorAll('.form-step').forEach((el, idx) => {
-        el.classList.toggle('active', idx === currentStep - 1);
+    function goToStep(step) {
+      // Track steps and sections
+      const steps = [1, 2, 3];
+      steps.forEach(s => {
+        const stepEl = document.getElementById(`step-${s}`);
+        const sectionEl = document.getElementById(`section-${s}`);
+        if (s === step) {
+          stepEl.classList.add('active');
+          stepEl.classList.remove('dimmed');
+          sectionEl.classList.remove('dimmed');
+          sectionEl.scrollIntoView({ behavior: 'smooth' });
+        } else if (s < step) {
+          stepEl.classList.add('active');
+          stepEl.classList.remove('dimmed');
+          sectionEl.classList.remove('dimmed');
+        } else {
+          stepEl.classList.remove('active');
+          stepEl.classList.add('dimmed');
+          sectionEl.classList.add('dimmed');
+        }
       });
 
-      // Update header steps
-      for (let i = 1; i <= 3; i++) {
-        document.getElementById(`step${i}-indicator`).classList.toggle('active', i === currentStep);
-      }
+      // Progress bar
+      const fill = document.getElementById('progress-fill');
+      const percent = ((step - 1) / 2) * 100;
+      fill.style.width = percent + '%';
 
-      // Update buttons
-      document.getElementById("backBtn").disabled = currentStep === 1;
-      document.getElementById("nextBtn").textContent = currentStep === 3 ? "Finish" : "Next";
-    }
+      // Show result at final step
+      if (step === 3) {
+        const income = parseFloat(document.getElementById("monthlyIncome").value) || 0;
+        const years = parseFloat(document.getElementById("yearsToReplace").value) || 0;
+        const hospital = parseFloat(document.getElementById("hospitalCost").value) || 0;
+        const recovery = parseFloat(document.getElementById("recoveryCost").value) || 0;
 
-    function nextStep() {
-      if (currentStep === 1) {
-        const income = +document.getElementById("income").value;
-        const years = +document.getElementById("years").value;
-        if (!income || !years) {
-          alert("Please complete Step 1.");
-          return;
-        }
-      }
+        const totalIncome = income * 12 * years;
+        const totalMedical = hospital + recovery;
+        const total = totalIncome + totalMedical;
 
-      if (currentStep === 2) {
-        const medical = +document.getElementById("medical").value;
-        if (!medical) {
-          alert("Please complete Step 2.");
-          return;
-        }
-      }
-
-      if (currentStep === 3) {
-        return;
-      }
-
-      currentStep++;
-      updateStepDisplay();
-
-      if (currentStep === 3) {
-        const income = +document.getElementById("income").value;
-        const years = +document.getElementById("years").value;
-        const medical = +document.getElementById("medical").value;
-
-        const incomeReplacement = income * years;
-        const total = incomeReplacement + medical;
-
-        document.getElementById("summary-output").innerHTML = `
-          <p><strong>Income Replacement:</strong> RM ${incomeReplacement.toLocaleString()}</p>
-          <p><strong>Medical Expenses:</strong> RM ${medical.toLocaleString()}</p>
-          <hr>
-          <p><strong>Total CI Coverage Needed:</strong> <span style="font-size:1.2em;color:#004080;">RM ${total.toLocaleString()}</span></p>
+        document.getElementById("result").innerHTML = `
+          <strong>Total Income Replacement:</strong> RM ${totalIncome.toLocaleString()}<br>
+          <strong>Total Medical Expenses:</strong> RM ${totalMedical.toLocaleString()}<br>
+          <strong><u>Recommended CI Coverage:</u></strong> <b>RM ${total.toLocaleString()}</b>
         `;
       }
     }
-
-    function prevStep() {
-      if (currentStep > 1) {
-        currentStep--;
-        updateStepDisplay();
-      }
-    }
   </script>
+
 </body>
 </html>
