@@ -5,51 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CI Pro Calculator</title>
   <style>
-    :root {
-      --main-color: #004080;
-      --inactive-color: #ccc;
-      --dimmed-color: #aaa;
-    }
+  :root {
+  --bg-gradient: linear-gradient(180deg, #fdfdfd 0%, #f4f4f7 100%);
+  --card-bg: #ffffffdd; /* translucent white */
+  --card-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  --rainbow-gradient: linear-gradient(90deg,
+    #ff5f6d,
+    #ffc371,
+    #47cf73,
+    #32a6ff,
+    #9b5de5
+  );
+  --text-main: #1c1c1e;
+  --text-subtle: #6e6e73;
+}
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
-      margin: 0;
-      background: #f4f7fb;
-      color: #333;
-    }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  margin: 0;
+}
 
-    .sticky-header {
-      position: sticky;
-      top: 0;
-      background: white;
-      z-index: 999;
-      padding: 20px 15px 10px;
-      border-bottom: 1px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-    }
+.sticky-header {
+  background: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 25px 15px 10px;
+  border-bottom: 0;
+  box-shadow: none;
+}
 
-    h1 {
-      font-size: 1.4rem;
-      margin: 0 0 10px 0;
-      text-align: center;
-      color: var(--main-color);
-    }
+h1 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 0 0 12px 0;
+  background: var(--rainbow-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
-    .progress-bar {
-      width: 100%;
-      height: 5px;
-      background: var(--inactive-color);
-      position: relative;
-      overflow: hidden;
-      margin-bottom: 15px;
-    }
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #e5e5ea;
+  overflow: hidden;
+}
 
-    .progress-fill {
-      height: 100%;
-      background: var(--main-color);
-      width: 0%;
-      transition: width 0.4s ease;
-    }
+.progress-fill {
+  background: var(--rainbow-gradient);
+  transition: width 0.4s ease;
+}
+
 
     .step-tracker {
       display: flex;
@@ -112,10 +120,16 @@
       transition: opacity 0.5s ease;
     }
 
-    .content-section.hidden {
-      display: none;
-      opacity: 0;
-    }
+.content-section {
+  max-width: 480px;
+  margin: 20px auto;
+  background: var(--card-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: var(--card-shadow);
+}
 
     .fade-in {
       animation: fadeIn 0.5s ease forwards;
@@ -137,14 +151,21 @@
     }
 
     input[type="number"],
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
+input[type="text"] {
+  border-radius: 12px;
+  border: 1px solid #d1d1d6;
+  padding: 12px;
+  font-size: 1rem;
+  background: #f9f9fb;
+  transition: border 0.2s, box-shadow 0.2s;
+}
 
+input:focus {
+  outline: none;
+  border: 1px solid transparent;
+  background: white;
+  box-shadow: 0 0 0 2px #007aff44;
+}
     .button-group {
       display: flex;
       justify-content: space-between;
@@ -154,20 +175,55 @@
     }
 
     button {
-      background: var(--main-color);
-      color: white;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 999px; /* Pill shape */
-      font-size: 1rem;
-      cursor: pointer;
-      flex: 1;
-      min-width: 120px;
-    }
+  background: var(--rainbow-gradient);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 999px;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
 
     button:hover {
-      background: #003366;
-    }
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+    .result-card {
+  margin-top: 20px;
+  padding: 30px;
+  border-radius: 28px;
+  background: var(--card-bg);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+  text-align: center;
+}
+
+.result-card h3 {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-subtle);
+  margin-bottom: 15px;
+}
+
+.result-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  background: var(--rainbow-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+
+.result-breakdown {
+  font-size: 0.95rem;
+  color: var(--text-subtle);
+  line-height: 1.5;
+}
 
     @media (max-width: 600px) {
       h1 {
@@ -295,10 +351,10 @@
         const total = totalIncome + totalMedical;
 
         document.getElementById("result").innerHTML = `
-          <strong>Total Income Replacement:</strong> RM ${totalIncome.toLocaleString()}<br>
-          <strong>Total Medical Expenses:</strong> RM ${totalMedical.toLocaleString()}<br>
-          <strong><u>Recommended CI Coverage:</u></strong> <b>RM ${total.toLocaleString()}</b>
-        `;
+  <strong>Total Income Replacement:</strong> RM ${totalIncome.toLocaleString()}<br>
+  <strong>Total Medical Expenses:</strong> RM ${totalMedical.toLocaleString()}<br>
+  <strong><u>Recommended CI Coverage:</u></strong> <b>RM ${total.toLocaleString()}</b>
+`;
       }
     }
   </script>
