@@ -6,174 +6,200 @@
   <title>CI Pro Dashboard</title>
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #f5f7fa;
       color: #333;
+      display: flex;
+      height: 100vh;
     }
 
-    /* Top header with steps */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
       background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      z-index: 1000;
-      padding: 15px;
-    }
-    .steps {
+      border-right: 1px solid #eee;
       display: flex;
-      justify-content: center;
-      gap: 30px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 0;
     }
-    .step {
+    .sidebar .menu {
       display: flex;
-      align-items: center;
-      opacity: 0.4;
-      transition: opacity 0.3s;
+      flex-direction: column;
     }
-    .step.active { opacity: 1; }
-    .circle {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      background: #007aff;
-      color: #fff;
+    .menu-item {
+      padding: 15px 20px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 8px;
+      gap: 10px;
+      color: #555;
+      transition: background 0.2s;
+    }
+    .menu-item:hover,
+    .menu-item.active {
+      background: #e6f4ea;
+      color: #007a33;
+      font-weight: 600;
     }
 
-    /* Dashboard layout */
-    .dashboard {
+    /* Main area */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    .topbar {
+      height: 60px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar h1 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Dashboard content layout */
+    .content {
       display: grid;
       grid-template-columns: 1fr 300px;
       gap: 20px;
-      padding: 120px 20px 40px; /* space for header */
-      max-width: 1200px;
-      margin: auto;
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
     }
+
     .card {
       background: #fff;
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       margin-bottom: 20px;
       display: none;
-      opacity: 0;
-      transition: opacity 0.4s;
     }
     .card.active {
       display: block;
-      opacity: 1;
     }
 
     .summary {
-      position: sticky;
-      top: 120px;
       background: #fff;
+      border-radius: 12px;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: sticky;
+      top: 80px;
+      height: fit-content;
     }
 
     input {
       width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
+      padding: 12px;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 10px;
     }
 
     .btn {
       margin-top: 20px;
-      background: #007aff;
+      background: #007a33;
       color: #fff;
-      padding: 10px 20px;
+      padding: 12px 20px;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      font-size: 15px;
     }
 
-    @media (max-width: 800px) {
-      .dashboard {
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+      .content {
         grid-template-columns: 1fr;
       }
       .summary {
         position: relative;
         top: auto;
-        margin-top: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="steps">
-      <div class="step active" data-step="1"><div class="circle">1</div> Income</div>
-      <div class="step" data-step="2"><div class="circle">2</div> Medical</div>
-      <div class="step" data-step="3"><div class="circle">3</div> Summary</div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="menu">
+      <div class="menu-item active" onclick="goStep(1)">💼 Income</div>
+      <div class="menu-item" onclick="goStep(2)">🏥 Medical</div>
+      <div class="menu-item" onclick="goStep(3)">📊 Summary</div>
     </div>
-  </header>
+    <div class="menu">
+      <div class="menu-item">⚙️ Settings</div>
+      <div class="menu-item">❓ Help</div>
+      <div class="menu-item">🚪 Logout</div>
+    </div>
+  </div>
 
-  <main class="dashboard">
-    <!-- Main form area -->
-    <div>
-      <div class="card active" id="step1">
-        <h2>Step 1: Income Replacement</h2>
-        <input type="number" id="income" placeholder="Monthly income (MYR)" />
-        <button class="btn" onclick="nextStep()">Next</button>
-      </div>
-      <div class="card" id="step2">
-        <h2>Step 2: Medical Expenses</h2>
-        <input type="number" id="medical" placeholder="Estimated medical costs (MYR)" />
-        <button class="btn" onclick="nextStep()">Next</button>
-      </div>
-      <div class="card" id="step3">
-        <h2>Step 3: Summary</h2>
-        <p>Results shown in right panel.</p>
-        <button class="btn" onclick="prevStep()">Back</button>
-      </div>
+  <!-- Main area -->
+  <div class="main">
+    <!-- Top bar -->
+    <div class="topbar">
+      <h1>CI Pro Calculator</h1>
+      <div>👤 Profile</div>
     </div>
 
-    <!-- Sidebar summary -->
-    <div class="summary">
-      <h3>Your Summary</h3>
-      <p><strong>Income:</strong> <span id="sumIncome">-</span></p>
-      <p><strong>Medical:</strong> <span id="sumMedical">-</span></p>
-      <p><strong>Total CI Pro Need:</strong> <span id="sumTotal">-</span></p>
+    <!-- Content -->
+    <div class="content">
+      <!-- Step cards -->
+      <div>
+        <div class="card active" id="step1">
+          <h2>Step 1: Income Replacement</h2>
+          <input type="number" id="income" placeholder="Monthly income (MYR)" />
+          <button class="btn" onclick="goStep(2)">Next</button>
+        </div>
+        <div class="card" id="step2">
+          <h2>Step 2: Medical Expenses</h2>
+          <input type="number" id="medical" placeholder="Estimated medical cost (MYR)" />
+          <button class="btn" onclick="goStep(3)">Next</button>
+        </div>
+        <div class="card" id="step3">
+          <h2>Step 3: Summary</h2>
+          <p>Check results in the right panel.</p>
+          <button class="btn" onclick="goStep(1)">Back to Start</button>
+        </div>
+      </div>
+
+      <!-- Right summary panel -->
+      <div class="summary">
+        <h3>Your Summary</h3>
+        <p><strong>Income:</strong> <span id="sumIncome">-</span></p>
+        <p><strong>Medical:</strong> <span id="sumMedical">-</span></p>
+        <p><strong>Total Need:</strong> <span id="sumTotal">-</span></p>
+      </div>
     </div>
-  </main>
+  </div>
 
   <script>
     let currentStep = 1;
 
-    function updateSteps() {
-      document.querySelectorAll(".step").forEach((el, i) => {
-        el.classList.toggle("active", i+1 === currentStep);
+    function goStep(step) {
+      currentStep = step;
+      document.querySelectorAll(".card").forEach((c, i) => {
+        c.classList.toggle("active", i+1 === step);
       });
-      document.querySelectorAll(".card").forEach((el, i) => {
-        el.classList.remove("active");
-        if (i+1 === currentStep) el.classList.add("active");
+      document.querySelectorAll(".menu-item").forEach((m, i) => {
+        if (i < 3) m.classList.toggle("active", i+1 === step);
       });
       updateSummary();
-    }
-
-    function nextStep() {
-      if (currentStep < 3) {
-        currentStep++;
-        updateSteps();
-      }
-    }
-
-    function prevStep() {
-      if (currentStep > 1) {
-        currentStep--;
-        updateSteps();
-      }
     }
 
     function updateSummary() {
