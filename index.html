@@ -1,123 +1,319 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsive Dashboard</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-      background: #f5f5f7;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Insurance Dashboard - Mockup</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --muted:#6b6f76;
+    --accent:#0a84ff; /* iOS blue-ish */
+    --glass: rgba(255,255,255,0.65);
+    --radius:12px;
+    --shadow: 0 6px 18px rgba(15,15,20,0.06);
+    --gap:18px;
+    --container-max:1200px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #111216;
+  }
 
-    /* Sidebar */
-    .sidebar {
-      width: 250px;
-      background: #ffffff;
-      border-right: 1px solid #ddd;
-      padding: 1rem;
-      transition: transform 0.3s ease;
-    }
-    .sidebar h2 {
-      margin-top: 0;
-      font-size: 1.2rem;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar ul li {
-      padding: 0.8rem 0;
-      cursor: pointer;
-    }
+  html,body{height:100%; margin:0; background:linear-gradient(180deg,#f7f8fa 0,#f5f6f8 100%);}
 
-    /* Main content */
-    .main {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-    }
+  /* Page container */
+  .wrap{
+    max-width:var(--container-max);
+    margin:28px auto;
+    padding:20px;
+  }
 
-    /* Top bar */
-    .topbar {
-      display: none; /* only on mobile */
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-      background: #fff;
-      border-bottom: 1px solid #ddd;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    .hamburger {
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+  /* Header */
+  .topbar{
+    display:flex;
+    gap:var(--gap);
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .title {
+    display:flex;
+    flex-direction:column;
+  }
+  .title h1{font-size:1.15rem; margin:0 0 4px 0; font-weight:600;}
+  .title p{margin:0; color:var(--muted); font-size:0.9rem;}
 
-    /* Mobile styles */
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-      .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100%;
-        transform: translateX(-100%);
-        z-index: 2000;
-      }
-      .sidebar.open {
-        transform: translateX(0);
-      }
-      .topbar {
-        display: flex;
-      }
-      .main {
-        flex: 1;
-        padding-top: 0.5rem;
-      }
+  /* Controls / actions */
+  .actions{display:flex; gap:10px; align-items:center;}
+  .btn{
+    background:var(--card);
+    border:1px solid rgba(16,18,20,0.06);
+    padding:8px 12px;
+    border-radius:10px;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    font-size:0.9rem;
+  }
+
+  /* Grid layout - mobile first single column */
+  .dashboard-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:var(--gap);
+  }
+
+  /* KPI cards container: flexible row on wide screens */
+  .kpi-row{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap:var(--gap);
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(12,14,20,0.03);
+  }
+
+  .kpi{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .kpi .meta{color:var(--muted); font-size:0.85rem;}
+  .kpi .value{font-size:1.35rem; font-weight:700; letter-spacing: -0.01em;}
+
+  /* Two-up row for charts on larger screens */
+  .charts-row{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:var(--gap);
+  }
+
+  /* Chart placeholder styling */
+  .chart-title { font-size:0.92rem; margin:0 0 8px 0; font-weight:600; }
+  .chart-area{ min-height:200px; display:flex; align-items:center; justify-content:center; color:var(--muted); }
+
+  /* Table */
+  .table-card{ overflow-x:auto; }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:0.92rem;
+  }
+  thead tr{ background: linear-gradient(180deg,#fbfdff,#f7fbff); }
+  th,td{ padding:10px 12px; text-align:left; border-bottom: 1px solid rgba(16,18,20,0.04); }
+  th{ font-weight:600; color:#202226; font-size:0.85rem; }
+  tbody tr:hover{ background: rgba(10,132,255,0.03); }
+
+  /* Responsive rules (desktop) */
+  @media (min-width: 900px){
+    .dashboard-grid{
+      grid-template-columns: 1fr;
+      gap:22px;
     }
-  </style>
+    /* make KPI row take full-width and show three cards inline */
+    .kpi-row{ grid-template-columns: repeat(3, 1fr); }
+
+    /* make charts a 2x1 pair */
+    .charts-row{ grid-template-columns: 1fr 1fr; }
+  }
+
+  /* Desktop: two-by-two main layout where KPIs occupy top-left/top-right
+     We'll place the charts in the grid next to KPIs on extra wide screens */
+  @media (min-width: 1200px){
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: min-content;
+      gap:var(--gap);
+    }
+    /* Place the full-width table to span both columns */
+    .table-card{ grid-column: 1 / -1; }
+    /* KPI row spans first column and second KPI collections */
+    .kpi-row{ grid-column: 1 / 2; }
+    .charts-row{ grid-column: 2 / 3; align-self:start; }
+  }
+
+  /* small helpers */
+  .muted{ color:var(--muted); font-size:0.85rem; }
+  .small{ font-size:0.82rem; color:var(--muted); }
+  .spark{ font-weight:700; color:var(--accent); }
+
+  /* make table responsive on small screens */
+  @media (max-width:480px){
+    th,td{ padding:10px 8px; font-size:0.88rem; }
+    .chart-area{ min-height:170px; }
+  }
+</style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <nav class="sidebar" id="sidebar">
-    <h2>Menu</h2>
-    <ul>
-      <li>Dashboard</li>
-      <li>Tasks</li>
-      <li>Calendar</li>
-      <li>Analytics</li>
-      <li>Team</li>
-    </ul>
-  </nav>
+  <div class="wrap" role="main">
 
-  <!-- Top bar (mobile only) -->
-  <div class="topbar">
-    <span class="hamburger" id="hamburger">☰</span>
-    <h2>Dashboard</h2>
-  </div>
+    <div class="topbar" aria-hidden="false">
+      <div class="title">
+        <h1>Portfolio Dashboard</h1>
+        <p class="small">Quick snapshot of active policies, persistency and claims.</p>
+      </div>
+      <div class="actions" role="toolbar" aria-label="Actions">
+        <button class="btn" id="refreshBtn" title="Refresh data">Refresh</button>
+        <button class="btn" id="dateRange" title="Date range">Last 30 days ▾</button>
+      </div>
+    </div>
 
-  <!-- Main content -->
-  <main class="main">
-    <h1>Welcome</h1>
-    <p>This is your dashboard content.</p>
-    <p>Resize the window to test sidebar behavior.</p>
-  </main>
+    <div class="dashboard-grid" id="dashboardGrid">
 
-  <script>
-    const sidebar = document.getElementById("sidebar");
-    const hamburger = document.getElementById("hamburger");
+      <!-- KPI Column (on wide screens it sits left) -->
+      <div class="kpi-row" aria-label="Key performance indicators">
+        <div class="card" role="region" aria-labelledby="kpi1Title">
+          <div id="kpi1Title" class="small">Active Policies</div>
+          <div class="kpi">
+            <div>
+              <div class="value" id="activePolicies">1,842</div>
+              <div class="muted small">+2.3% vs last month</div>
+            </div>
+            <div class="spark">✦</div>
+          </div>
+        </div>
 
-    hamburger.addEventListener("click", () => {
-      sidebar.classList.toggle("open");
-    });
-  </script>
+        <div class="card" role="region" aria-labelledby="kpi2Title">
+          <div id="kpi2Title" class="small">Persistency Ratio</div>
+          <div class="kpi">
+            <div>
+              <div class="value" id="persistency">88.7%</div>
+              <div class="muted small">12-month rolling</div>
+            </div>
+            <div class="spark">▲</div>
+          </div>
+        </div>
+
+        <div class="card" role="region" aria-labelledby="kpi3Title">
+          <div id="kpi3Title" class="small">Claims Paid (YTD)</div>
+          <div class="kpi">
+            <div>
+              <div class="value" id="claimsPaid">RM 1.24M</div>
+              <div class="muted small">All claims settled</div>
+            </div>
+            <div class="spark">💠</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Column (on desktop sits to the right of KPIs) -->
+      <div class="charts-row" aria-label="Charts and visualisations">
+        <div class="card" role="region" aria-labelledby="chart1Title" tabindex="0">
+          <h3 id="chart1Title" class="chart-title">Premiums Over Time</h3>
+          <div class="chart-area" aria-hidden="false">
+            <!-- Simple inline SVG line chart placeholder -->
+            <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="none" aria-label="Line chart placeholder">
+              <defs>
+                <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stop-color="#dbefff" stop-opacity="0.9"></stop>
+                  <stop offset="1" stop-color="#ffffff" stop-opacity="0.2"></stop>
+                </linearGradient>
+              </defs>
+              <rect x="0" y="0" width="400" height="160" fill="transparent"></rect>
+              <path d="M0 110 L40 98 L80 84 L120 70 L160 78 L200 60 L240 68 L280 44 L320 52 L360 38 L400 24"
+                    stroke="#0a84ff" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M0 110 L40 98 L80 84 L120 70 L160 78 L200 60 L240 68 L280 44 L320 52 L360 38 L400 24 L400 160 L0 160 Z"
+                    fill="url(#g1)" opacity="0.9"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="card" role="region" aria-labelledby="chart2Title" tabindex="0">
+          <h3 id="chart2Title" class="chart-title">Claims by Category</h3>
+          <div class="chart-area" aria-hidden="false">
+            <!-- Simple pie placeholder -->
+            <svg width="140" height="140" viewBox="0 0 32 32" aria-label="Pie chart placeholder">
+              <circle r="16" cx="16" cy="16" fill="#f2f8ff"></circle>
+              <path d="M16 16 L32 16 A16 16 0 0 1 12.5 2.5 Z" fill="#0a84ff"></path>
+              <path d="M16 16 L12.5 2.5 A16 16 0 0 1 4 18 Z" fill="#6c8cff"></path>
+              <path d="M16 16 L4 18 A16 16 0 0 1 24 30 Z" fill="#cfe3ff"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full width table (spans both columns on wide screens) -->
+      <div class="card table-card" role="region" aria-labelledby="tableTitle">
+        <h3 id="tableTitle" class="chart-title">Policy Details</h3>
+        <div style="overflow:auto;">
+          <table aria-describedby="tableTitle">
+            <thead>
+              <tr>
+                <th>Policy No</th>
+                <th>Holder</th>
+                <th>Product</th>
+                <th>Premium (RM)</th>
+                <th>Status</th>
+                <th>Start Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PL-0001234</td>
+                <td>Ahmad Bin Ali</td>
+                <td>CI Pro</td>
+                <td>1,200</td>
+                <td>Active</td>
+                <td>2021-05-12</td>
+              </tr>
+              <tr>
+                <td>PL-0001256</td>
+                <td>Lim Siew Lian</td>
+                <td>Term Protect</td>
+                <td>820</td>
+                <td>Active</td>
+                <td>2020-11-01</td>
+              </tr>
+              <tr>
+                <td>PL-0001278</td>
+                <td>Raj Kumar</td>
+                <td>IL Protector</td>
+                <td>2,450</td>
+                <td>Lapsed</td>
+                <td>2019-07-08</td>
+              </tr>
+              <tr>
+                <td>PL-0001299</td>
+                <td>Nur Aisyah</td>
+                <td>Hospital Care</td>
+                <td>320</td>
+                <td>Active</td>
+                <td>2022-02-20</td>
+              </tr>
+              <tr>
+                <td>PL-0001301</td>
+                <td>Tan Mei</td>
+                <td>CI Pro</td>
+                <td>1,800</td>
+                <td>Active</td>
+                <td>2023-01-15</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div> <!-- dashboard-grid -->
+  </div> <!-- wrap -->
+
+<script>
+  // Small demo JS: simulate refresh updating KPI numbers
+  const refreshBtn = document.getElementById('refreshBtn');
+  refreshBtn.addEventListener('click', () => {
+    // simple simulated update
+    document.getElementById('activePolicies').textContent = (1800 + Math.floor(Math.random()*100)).toLocaleString();
+    document.getElementById('persistency').textContent = (85 + Math.random()*6).toFixed(1) + '%';
+    document.getElementById('claimsPaid').textContent = 'RM ' + (1.1 + Math.random()*0.3).toFixed(2) + 'M';
+    // small visual feedback
+    refreshBtn.textContent = 'Refreshing…';
+    setTimeout(()=> refreshBtn.textContent = 'Refresh', 700);
+  });
+</script>
 </body>
 </html>
